@@ -1,0 +1,14 @@
+package com.food_registry.order.feign;
+
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+import com.food_registry.order.dto.UserDTO;
+
+@FeignClient(name = "user-information")
+public interface UserClient {
+	
+	@GetMapping("/user/fetchById/{id}")
+	UserDTO fetchUserById(@PathVariable("id") Integer id);
+}

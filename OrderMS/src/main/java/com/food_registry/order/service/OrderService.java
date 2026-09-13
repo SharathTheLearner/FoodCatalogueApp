@@ -1,0 +1,78 @@
+package com.food_registry.order.service;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import com.food_registry.order.dto.OrderDTO;
+import com.food_registry.order.dto.OrderDTOFromFE;
+import com.food_registry.order.dto.UserDTO;
+import com.food_registry.order.entity.Order;
+import com.food_registry.order.feign.UserClient;
+import com.food_registry.order.mapper.OrderMapper;
+import com.food_registry.order.repo.OrderRepo;
+
+@Service
+public class OrderService {
+	
+	@Autowired
+	OrderRepo orderRepo;
+	
+	@Autowired
+	SequenceGenerator sequenceGenerator;
+	
+	@Autowired
+	OrderMapper orderMapper;
+	
+//	@Autowired
+////	@Qualifier("loadBalancedRestTemplate")
+//	RestTemplate restTemplate;
+	
+	@Autowired
+	UserClient userClient;
+	
+	@Value("${user.service.url}")
+	private String userServiceUrl;
+
+	public OrderDTO saveOrderInDB(OrderDTOFromFE orderDetails) {
+		System.out.println("User ID received: " + orderDetails.getUserID());
+		int newOrderId =  sequenceGenerator.generateNextOrderID();
+		
+		UserDTO userDTO = fetchOrderDetailsFromUserID(orderDetails.getUserID());
+		
+		Order orderToBeSaved = new Order(newOrderId, orderDetails.getFoodItemsList(), orderDetails.getRestaurantDTO(), userDTO);
+		
+		orderRepo.save(orderToBeSaved);
+		
+		OrderMapper orderSavedMappedAndReturn = new OrderMapper();
+		return orderSavedMappedAndReturn.toDto(orderToBeSaved);
+	}
+
+	private UserDTO fetchOrderDetailsFromUserID(Integer userID) {
+//		return restTemplate.getForObject(userServiceUrl + "/fetchById/" + userID, UserDTO.class);
+		return userClient.fetchUserById(userID);
+	}
+	
+	public List<OrderDTO> getAllOrders() {
+	    List<Order> orders = orderRepo.findAll();
+	    return orders.stream()
+	            .map(orderMapper::toDto)
+	            .collect(Collectors.toList());
+	}
+
+	public ResponseEntity<OrderDTO> getOrderById(Integer id) {
+	    Optional<Order> order = orderRepo.findById(id);
+	    if (order.isPresent()) {
+	        return new ResponseEntity<>(orderMapper.toDto(order.get()), HttpStatus.OK);
+	    }
+	    return ResponseEntity.notFound().build();
+	}
+}

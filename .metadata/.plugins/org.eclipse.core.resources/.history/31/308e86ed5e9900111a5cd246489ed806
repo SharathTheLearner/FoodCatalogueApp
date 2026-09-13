@@ -1,0 +1,26 @@
+package com.food_registry.order.entity;
+
+import java.util.List;
+
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.food_registry.order.dto.FoodItemsDTO;
+import com.food_registry.order.dto.RestaurantDTO;
+import com.food_registry.order.dto.UserDTO;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Document("order") // This is mongodb's way of saving to its DB, like @Entity, @Table in SQL
+public class Order {
+//	Since MongoDB doesn't support sequential creation of ID like AUTO generation we need to keep track of it ourself
+	private Integer orderId;
+	private List<FoodItemsDTO> foodItemsList;
+	private RestaurantDTO restaurant;
+	private UserDTO userDTO;
+}
+

@@ -1,0 +1,20 @@
+package com.food_registry.order.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.food_registry.order.dto.OrderDTO;
+import com.food_registry.order.dto.OrderDTOFromFE;
+import com.food_registry.order.repo.OrderRepo;
+
+@Service
+public class OrderService {
+	
+	@Autowired
+	OrderRepo orderRepo;
+
+	public OrderDTO saveOrderInDB(OrderDTOFromFE orderDetails) {
+		
+		return null;
+	}
+}

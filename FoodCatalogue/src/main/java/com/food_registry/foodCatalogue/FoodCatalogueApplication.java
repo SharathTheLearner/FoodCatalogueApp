@@ -1,0 +1,32 @@
+package com.food_registry.foodCatalogue;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.restclient.RestTemplateCustomizer;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.client.RestTemplate;
+
+@SpringBootApplication
+@EnableFeignClients(basePackages = "com.food_registry.foodCatalogue.feign")
+public class FoodCatalogueApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(FoodCatalogueApplication.class, args);
+	}
+	
+//	This bean is responsible to hit Restaurant Microservice using Food Catalogue Service
+//	LoadBalanced is used so that it is Eureka's job to fetch the details from service balancing load 
+//	@Bean
+//	@LoadBalanced
+//	public RestTemplate getRestTemplate() {
+//		return new RestTemplate();
+//	}
+	
+//	@Bean
+//	public RestTemplateCustomizer restTemplateCustomizer() {
+//	    return getRestTemplate -> {};
+//	}
+
+}

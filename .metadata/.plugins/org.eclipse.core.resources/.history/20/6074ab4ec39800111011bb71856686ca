@@ -1,0 +1,43 @@
+package com.food_registry.order.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import com.food_registry.order.dto.OrderDTO;
+import com.food_registry.order.dto.OrderDTOFromFE;
+import com.food_registry.order.dto.UserDTO;
+import com.food_registry.order.entity.Order;
+import com.food_registry.order.mapper.OrderMapper;
+import com.food_registry.order.repo.OrderRepo;
+
+@Service
+public class OrderService {
+	
+	@Autowired
+	OrderRepo orderRepo;
+	
+	@Autowired
+	SequenceGenerator sequenceGenerator;
+	
+	@Autowired
+	RestTemplate restTemplate;
+
+	public OrderDTO saveOrderInDB(OrderDTOFromFE orderDetails) {
+		System.out.println("User ID received: " + orderDetails.getUserID());
+		int newOrderId =  sequenceGenerator.generateNextOrderID();
+		
+		UserDTO userDTO = fetchOrderDetailsFromUserID(orderDetails.getUserID());
+		
+		Order orderToBeSaved = new Order(newOrderId, orderDetails.getFoodItemsList(), orderDetails.getRestaurantDTO(), userDTO);
+		
+		orderRepo.save(orderToBeSaved);
+		
+		OrderMapper orderSavedMappedAndReturn = new OrderMapper();
+		return orderSavedMappedAndReturn.toDto(orderToBeSaved);
+	}
+
+	private UserDTO fetchOrderDetailsFromUserID(Integer userID) {
+		return restTemplate.getForObject("http://USER_INFORMATION/user/fetchById/" + userID, UserDTO.class);
+	}
+}

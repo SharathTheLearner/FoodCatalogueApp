@@ -1,0 +1,9 @@
+cat > .gitignore << 'EOF'
+target/
+*.class
+.idea/
+*.iml
+.env
+application-local.yml
+*.log
+EOF

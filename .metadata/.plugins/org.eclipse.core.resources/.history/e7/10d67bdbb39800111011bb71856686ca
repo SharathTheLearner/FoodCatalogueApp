@@ -1,0 +1,11 @@
+spring.application.name=OrderMS
+
+server.port=9092
+
+eureka.client.service-url.defaultZone=http://localhost:8761/eureka
+
+#MongoDB application Property
+spring.data.mongodb.uri=mongodb://localhost:27017/orderDB
+spring.data.mongodb.host=localhost
+spring.data.mongodb.port=27017
+spring.data.mongodb.database=orderDB
